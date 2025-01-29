@@ -1,31 +1,36 @@
-from etl.data_transformer import DataTransformer
-from etl.elasticsearch_loader import ElasticsearchLoader
-from etl.etl_service import ETLService
-from etl.postgres_extractor import PostgresExtractor
-from etl.state_manager import StateManager
+import logging
+import os
+from dotenv import load_dotenv
+
+from state_manager import StateManager
+from postgres_extractor import PostgresExtractor
+from data_transformer import DataTransformer
+from elasticsearch_loader import ElasticsearchLoader
+from etl_service import ETLService
 
 if __name__ == "__main__":
-    import logging
-
     logging.basicConfig(level=logging.INFO)
 
-    # Настройки
+    # Загрузка переменных из .env
+    load_dotenv()
+
     POSTGRES_DSN = {
-        "dbname": "movies_db",
-        "user": "postgres",
-        "password": "password",
-        "host": "db",
-        "port": 5432
+        "dbname": os.getenv("POSTGRES_DB"),
+        "user": os.getenv("POSTGRES_USER"),
+        "password": os.getenv("POSTGRES_PASSWORD"),
+        "host": os.getenv("POSTGRES_HOST"),
+        "port": os.getenv("POSTGRES_PORT")
     }
-    ELASTIC_HOST = "http://elasticsearch:9200"
-    STATE_FILE = "state.json"
+    ELASTIC_HOST = os.getenv("ELASTIC_HOST")
+    STATE_FILE = os.getenv("STATE_FILE")
+    INDEX_NAME = os.getenv("MOVIES_INDEX")
+
     MOVIES_QUERY = """
         SELECT id, imdb_rating, genres, title, description, directors, actors, writers
         FROM movies
         WHERE id > %s
         ORDER BY id ASC;
     """
-    INDEX_NAME = "movies"
 
     # Инициализация компонентов
     state_manager = StateManager(STATE_FILE)
