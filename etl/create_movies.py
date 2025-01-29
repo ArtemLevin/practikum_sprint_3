@@ -3,9 +3,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from dotenv import load_dotenv
 import os
 
-
 load_dotenv()
-
 
 # Параметры подключения к PostgreSQL
 DB_NAME = os.getenv("DB_NAME")
@@ -28,12 +26,17 @@ CREATE TABLE IF NOT EXISTS movies (
 );
 """
 
+
 def create_database_and_table():
     """Создаёт базу данных и таблицу movies."""
     try:
         # Подключаемся к PostgreSQL
         conn = psycopg2.connect(
-            dbname="postgres", user=DB_USER, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT
+            dbname="postgres",
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT
         )
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)  # Для создания базы данных
         cursor = conn.cursor()
@@ -63,6 +66,7 @@ def create_database_and_table():
     finally:
         cursor.close()
         conn.close()
+
 
 if __name__ == "__main__":
     create_database_and_table()
